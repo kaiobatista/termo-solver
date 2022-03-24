@@ -138,5 +138,8 @@ while True:
         else:
             print(f'Palavra: {i[1]} | Pontuação: {i[0]}')
     print('Podem ser', len(palavras_possiveis), 'palavras')
-    print(f'Fomação da palavra alvo: {"".join(list(palavra_alvo.values()))}')
-    print(lugares_errados)
+    
+    forma_alvo = list()
+    for v in palavra_alvo.values():
+        forma_alvo.append(v if v != '' else '_')
+    print(f'Fomação da palavra alvo: {"".join(forma_alvo)}')
