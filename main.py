@@ -15,7 +15,6 @@ def contar_letras(lista):
     
     return letras_c
 
-
 def organizar_dict(dicio):
     value_key_pairs = [(k, v) for (v, k) in dicio.items()]
     sorted_value_key_pairs = sorted(value_key_pairs, reverse=True)
@@ -30,6 +29,7 @@ total_de_palavras = 6026
 principais_palavras = list()
 
 palavra_alvo = {0:'', 1:'', 2:'', 3:'', 4:''}
+lugares_errados = {0: '', 1: '', 2: '', 3: '', 4: ''}
 letras_certas = list()
 letras_erradas = list()
 
@@ -39,7 +39,6 @@ with open(arquivo, 'r') as f:
         for l in alfabeto:
             if l in word:
                 letras_count[l] += 1
-
 
 value_key_pairs = [(k, v) for (v, k) in letras_count.items()]
 sorted_value_key_pairs = sorted(value_key_pairs, reverse=True)
@@ -74,6 +73,9 @@ while True:
         print(f'Digite a {i + 1}ª letra descoberta e a posição [pos 0 = nao sabe a posicao]: ')
         lt, pos = input('>> ').split(' ')
         letras_certas.append(lt)
+        if int(pos) == 0:
+            for i, j in enumerate(palavra_usada):
+                if j == lt: lugares_errados[i] += lt
         if int(pos) > 0: palavra_alvo[int(pos) - 1] = lt
     for l in palavra_usada:
         if l not in letras_certas:
@@ -91,19 +93,24 @@ while True:
             if not tem_letra_errada:
                 qnt_certas_na_palavra = 0
                 for l  in letras_certas:
-                    if l in word:
+                    if l in word: 
                         qnt_certas_na_palavra += 1
-                if qnt_certas_na_palavra == len(letras_certas):
-                    if ''.join(list(palavra_alvo.values())) in '        ':
-                            palavras_possiveis.append(word)
-                    else:
-                        qnt_certas_na_palavra = 0
-                        for k, v in palavra_alvo.items():    
-                            if word[k] == v:
-                                qnt_certas_na_palavra += 1
+                if qnt_certas_na_palavra == len(letras_certas): # Verifica se a palavra tem as letras marcadas como corretas
+                    test = False
+                    for k, v in lugares_errados.items():
+                        if word[k] in v:
+                            test = True
+                    if not test:
+                        if ''.join(list(palavra_alvo.values())) in '        ':
+                                palavras_possiveis.append(word)
+                        else:
+                            qnt_certas_na_palavra = 0
+                            for k, v in palavra_alvo.items():    
+                                if word[k] == v:
+                                    qnt_certas_na_palavra += 1
 
-                        if qnt_certas_na_palavra == len([x for x in palavra_alvo.values() if x != '']):        
-                            palavras_possiveis.append(word)
+                            if qnt_certas_na_palavra == len([x for x in palavra_alvo.values() if x != '']):        
+                                palavras_possiveis.append(word)
     
     palavras_possiveis = list(set(palavras_possiveis))
     letras_count = contar_letras(palavras_possiveis)
@@ -121,7 +128,15 @@ while True:
     
     palavra_pontuacao = sorted(palavra_pontuacao, reverse=True)
     
-
-    print(palavra_pontuacao)
+    for i in palavra_pontuacao:
+        if palavra_pontuacao[0][0] == i[0]:
+            print(f'\033[92mPalavra: {i[1]} | Pontuação: {i[0]}\033[m')
+        elif i[0] >= 1:
+            print(f'\033[93mPalavra: {i[1]} | Pontuação: {i[0]}\033[m')
+        elif palavra_pontuacao[-1][0] == i[0]:
+            print(f'\033[91mPalavra: {i[1]} | Pontuação: {i[0]}\033[m')
+        else:
+            print(f'Palavra: {i[1]} | Pontuação: {i[0]}')
     print('Podem ser', len(palavras_possiveis), 'palavras')
     print(f'Fomação da palavra alvo: {"".join(list(palavra_alvo.values()))}')
+    print(lugares_errados)
